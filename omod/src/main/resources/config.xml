@@ -17,7 +17,7 @@
 	<!-- <updateURL>https://modules.openmrs.org/modules/download/@MODULE_ID@/update.rdf</updateURL> -->
 	<!-- /Base Module Properties -->
 	
-	<require_version>2.3.4 - 2.*</require_version>
+	<require_version>2.3.3 - 2.*</require_version>
 	
 	<!-- Extensions -->
 	<extension>
@@ -31,6 +31,11 @@
 		<require_module>org.openmrs.event</require_module>
 		<require_module>org.openmrs.module.fhir2</require_module>
 	</require_modules>
+
+	<advice>
+		<point>org.openmrs.api.EncounterService</point>
+		<class>org.openmrs.module.dhpevents.api.advice.PatientCreationAdvice</class>
+	</advice>
 
 	<!-- Internationalization -->
 	<!-- All message codes should start with @MODULE_ID@.* -->
