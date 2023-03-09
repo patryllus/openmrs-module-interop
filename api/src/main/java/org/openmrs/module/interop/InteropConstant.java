@@ -25,4 +25,8 @@ public class InteropConstant {
 	
 	public static String CONDITION_BROKER_ENCOUNTER_TYPE_UUIDS = "interop.encounterTypes.enabled";
 	
+	public static String APPOINTMENT_PROCESSOR_ENCOUNTER_TYPE_UUIDS = "interop.encounterTypes.appointments";
+	
+	public static String APPOINTMENT_CONCEPT_UUID = "interop.appointments";
+	
 }

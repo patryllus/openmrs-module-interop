@@ -15,6 +15,7 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.interceptor.BasicAuthInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.r4.model.Appointment;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Location;
@@ -34,6 +35,7 @@ import org.openmrs.module.fhir2.api.translators.EncounterTranslator;
 import org.openmrs.module.fhir2.api.translators.ObservationTranslator;
 import org.openmrs.module.interop.InteropConstant;
 import org.openmrs.module.interop.api.Subscribable;
+import org.openmrs.module.interop.api.processors.AppointmentProcessor;
 import org.openmrs.module.interop.api.processors.ConditionProcessor;
 import org.openmrs.module.interop.api.metadata.EventMetadata;
 import org.openmrs.module.interop.utils.ObserverUtils;
@@ -60,6 +62,9 @@ public class EncounterObserver extends BaseObserver implements Subscribable<org.
 	
 	@Autowired
 	private ConditionProcessor conditionProcessor;
+	
+	@Autowired
+	private AppointmentProcessor appointmentProcessor;
 	
 	@Override
 	public Class<?> clazz() {
@@ -250,8 +255,21 @@ public class EncounterObserver extends BaseObserver implements Subscribable<org.
 		return bundleEntryComponent;
 	}
 	
+	private Bundle.BundleEntryComponent getAppointmentBundleComponent(Appointment appointment) {
+		Bundle.BundleEntryRequestComponent bundleEntryRequestComponent = new Bundle.BundleEntryRequestComponent();
+		bundleEntryRequestComponent.setMethod(Bundle.HTTPVerb.POST);
+		bundleEntryRequestComponent.setUrl("Appointment");
+		Bundle.BundleEntryComponent bundleEntryComponent = new Bundle.BundleEntryComponent();
+		bundleEntryComponent.setRequest(bundleEntryRequestComponent);
+		bundleEntryComponent.setResource(appointment);
+		return bundleEntryComponent;
+	}
+	
 	private void processBrokers(@Nonnull Encounter encounter, @NotNull Bundle bundle) {
 		List<Condition> conditions = conditionProcessor.process(encounter);
 		conditions.forEach(condition -> bundle.addEntry(getConditionBundleComponent(condition)));
+		List<Appointment> appointments = appointmentProcessor.process(encounter);
+		appointments.forEach(appointment -> bundle.addEntry(getAppointmentBundleComponent(appointment)));
+		
 	}
 }
